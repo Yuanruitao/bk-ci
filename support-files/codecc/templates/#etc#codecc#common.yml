@@ -111,3 +111,6 @@ esb:
 bk:
   paas:
     host: __BK_PAAS_PRIVATE_URL__
+
+storage:
+  type: nfs
