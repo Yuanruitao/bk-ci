@@ -109,8 +109,9 @@ public class ActiveStatisticConsumer {
     /**
      * 定时任务统计每日数据
      */
-    @RabbitListener(bindings = @QueueBinding(key = ROUTE_ACTIVE_STAT, value = @Queue(value = QUEUE_ACTIVE_STAT),
-            exchange = @Exchange(value = EXCHANGE_ACTIVE_STAT)))
+    @RabbitListener(bindings = @QueueBinding(key = ROUTE_ACTIVE_STAT,
+            value = @Queue(value = QUEUE_ACTIVE_STAT, durable = "true"),
+            exchange = @Exchange(value = EXCHANGE_ACTIVE_STAT, durable = "true")))
     public void consumer() {
         try {
             String date = DateTimeUtils.getDateByDiff(-1);
