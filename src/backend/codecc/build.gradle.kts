@@ -43,7 +43,6 @@ allprojects {
             exclude(group = "ch.qos.logback", module = "logback-classic")
             exclude(group = "com.tencent.bk.devops.ci.common", module = "common-archive-tencent")
             exclude(group = "com.tencent.bk.devops.ci.common", module = "common-client")
-            exclude(group = "com.tencent.bk.devops.ci.common", module = "common-web")
             exclude(group = "com.github.ulisesbocchio", module = "jasypt-spring-boot-starter")
         }
         if (project.name.contains("biz-codeccjob") && project.name != "boot-codeccjob") {
@@ -77,8 +76,6 @@ allprojects {
             dependency("org.apache.tomcat.embed:tomcat-embed-core:${Versions.tomcatEmbedCoreVersion}")
             dependency("commons-collections:commons-collections:${Versions.commonCollection}")
             dependency("biz.paluch.redis:lettuce:${Versions.lettuceVersion}")
-//			dependency("org.springframework.data:spring-data-redis:${Versions.springRedisVersion}")
-            dependency("org.glassfish.jersey.ext:jersey-bean-validation:${Versions.jerseyValidationVersion}")
             dependency("commons-io:commons-io:${Versions.commonsIOVersion}")
             dependency("commons-httpclient:commons-httpclient:${Versions.commonsHttpclientVersion}")
             dependency("com.alibaba:easyexcel:${Versions.easyexcel}")
@@ -91,18 +88,6 @@ allprojects {
                 entry("swagger-core")
                 entry("swagger-jaxrs")
             }
-//            dependencySet("com.fasterxml.jackson.module:${Versions.jacksonVersion}") {
-//                entry("jackson-module-kotlin")
-//            }
-//            dependencySet("com.fasterxml.jackson.core:${Versions.jacksonVersion}") {
-//                entry("jackson-core")
-//                entry("jackson-databind")
-//                entry("jackson-annotations")
-//            }
-//            dependencySet("com.fasterxml.jackson.jaxrs:${Versions.jacksonVersion}") {
-//                entry("jackson-jaxrs-json-provider")
-//                entry("jackson-jaxrs-base")
-//            }
             dependencySet("io.github.openfeign:${Versions.feignVersion}") {
                 entry("feign-jaxrs")
                 entry("feign-okhttp")
@@ -143,8 +128,26 @@ allprojects {
             }
             dependency("com.google.guava:guava:${Versions.guava}")
             dependency("commons-beanutils:commons-beanutils:${Versions.beanUtils}")
-            dependencySet("org.glassfish.jersey.core:${Versions.jerseyCommon}"){
+
+            //Jersey 版本控制
+            dependencySet("org.glassfish.jersey.container:${Versions.jersey}"){
+                entry("jersey-container-servlet")
+                entry("jersey-container-servlet-core")
+            }
+            dependencySet("org.glassfish.jersey.core:${Versions.jersey}"){
+                entry("jersey-client")
                 entry("jersey-common")
+                entry("jersey-server")
+            }
+            dependencySet("org.glassfish.jersey.ext:${Versions.jersey}"){
+                entry("jersey-bean-validation")
+                entry("jersey-entity-filtering")
+                entry("jersey-spring")
+            }
+            dependency("org.glassfish.jersey.inject:jersey-hk2:${Versions.jersey}")
+            dependencySet("org.glassfish.jersey.media:${Versions.jersey}"){
+                entry("jersey-media-json-jackson")
+                entry("jersey-media-multipart")
             }
 
         }
