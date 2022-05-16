@@ -5,30 +5,11 @@ plugins {
     id("com.tencent.devops.boot")
 }
 
-buildscript {
-    dependencies {
-        classpath("org.owasp:dependency-check-gradle:7.1.0.1")
-    }
-
-}
-
 allprojects {
     group = "com.tencent.bk.codecc"
-    version = "0.0.2"
+    version = "1.7.37"
 
     apply(plugin = "com.tencent.devops.boot")
-    apply(plugin = "org.owasp.dependencycheck")
-
-
-//    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all {
-//        kotlinOptions {
-//            val list = mutableListOf<String>(
-//                "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
-//                "-XXLanguage:+InlineClasses")
-//            list.addAll(freeCompilerArgs)
-//            freeCompilerArgs = list
-//        }
-//    }
 
     val property = project.findPropertyOrEmpty("devops.assemblyMode").trim()
     if (project.name.startsWith("boot-")) {
@@ -62,6 +43,7 @@ allprojects {
             exclude(group = "ch.qos.logback", module = "logback-classic")
             exclude(group = "com.tencent.bk.devops.ci.common", module = "common-archive-tencent")
             exclude(group = "com.tencent.bk.devops.ci.common", module = "common-client")
+            exclude(group = "com.tencent.bk.devops.ci.common", module = "common-web")
             exclude(group = "com.github.ulisesbocchio", module = "jasypt-spring-boot-starter")
         }
         if (project.name.contains("biz-codeccjob") && project.name != "boot-codeccjob") {
