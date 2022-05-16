@@ -130,7 +130,7 @@ allprojects {
             dependency("commons-beanutils:commons-beanutils:${Versions.beanUtils}")
 
             //Jersey 版本控制
-            dependencySet("org.glassfish.jersey.container:${Versions.jersey}"){
+            dependencySet("org.glassfish.jersey.containers:${Versions.jersey}"){
                 entry("jersey-container-servlet")
                 entry("jersey-container-servlet-core")
             }
