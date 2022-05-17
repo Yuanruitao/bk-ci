@@ -111,8 +111,8 @@ abstract class Client constructor(
 
     abstract fun <T : Any> getWithoutRetry(clz: KClass<T>): T
 
-    protected fun findServiceName(clz: KClass<*>): String {
-        return interfaces.getOrPut(clz) {
+    protected fun findServiceName(clz: KClass<*>, prefix: String? = null, suffix: String? = null): String {
+        val serviceName = interfaces.getOrPut(clz) {
             val serviceInterface = AnnotationUtils.findAnnotation(clz.java, ServiceInterface::class.java)
             if (serviceInterface != null) {
                 serviceInterface.value
@@ -124,6 +124,13 @@ abstract class Client constructor(
                 ?: throw ClientException("无法根据接口[$packageName]分析所属的服务")
                 matches.groupValues[1]
             }
+        }
+        return if (prefix.isNullOrBlank() && suffix.isNullOrBlank()) {
+            serviceName
+        } else if (suffix.isNullOrBlank()) {
+            "$prefix$serviceName"
+        } else {
+            "$serviceName$suffix"
         }
     }
 
