@@ -27,11 +27,7 @@ class ConsulServiceClient constructor(
     @Value("\${codecc.quartz.tag:\${spring.cloud.consul.discovery.tags}}")
     private val tag: String? = null
 
-    @Value("\${server.prefix:codecc:#{null}}")
-    private val serverPrefix: String? = null
 
-    @Value("\${service.suffix.codecc:#{null}}")
-    private val serviceSuffix: String? = null
     /**
      * 正常情况下创建feign对象
      */
@@ -45,7 +41,7 @@ class ConsulServiceClient constructor(
             .options(Request.Options(10000, 30000))// 10秒连接 30秒收数据
             .requestInterceptor(SpringContextUtil.getBean(RequestInterceptor::class.java,
                 "normalRequestInterceptor")) // 获取为feign定义的拦截器
-            .target(ConsulServiceTarget(findServiceName(clz, serverPrefix, serviceSuffix),
+            .target(ConsulServiceTarget(findServiceName(clz),
                     clz.java, discoveryClient, tag))
     }
 
@@ -61,7 +57,7 @@ class ConsulServiceClient constructor(
             .decoder(jacksonDecoder)
             .contract(jaxRsContract)
             .options(Request.Options(10000, 30000))// 10秒连接 30秒收数据
-            .target(ConsulServiceTarget(findServiceName(clz.kotlin, serverPrefix, serviceSuffix),
+            .target(ConsulServiceTarget(findServiceName(clz.kotlin),
                 clz, discoveryClient, tag))
     }
 
@@ -85,7 +81,7 @@ class ConsulServiceClient constructor(
                     throw e
                 }
             })
-            .target(ConsulServiceTarget(findServiceName(clz, serverPrefix, serviceSuffix),
+            .target(ConsulServiceTarget(findServiceName(clz),
                 clz.java, discoveryClient, tag))
     }
 }

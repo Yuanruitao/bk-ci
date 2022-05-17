@@ -54,6 +54,12 @@ abstract class Client constructor(
         protected val objectMapper: ObjectMapper
 ) {
 
+    @Value("\${server.prefix:codecc:#{null}}")
+    private val serverPrefix: String? = null
+
+    @Value("\${service.suffix.codecc:#{null}}")
+    private val serviceSuffix: String? = null
+
     private val interfaces = ConcurrentHashMap<KClass<*>, String>()
 
     private val okHttpClient = okhttp3.OkHttpClient.Builder()
@@ -111,7 +117,11 @@ abstract class Client constructor(
 
     abstract fun <T : Any> getWithoutRetry(clz: KClass<T>): T
 
-    protected fun findServiceName(clz: KClass<*>, prefix: String? = null, suffix: String? = null): String {
+    protected fun findServiceName(clz: KClass<*>): String {
+        return findServiceName(clz, serverPrefix, serviceSuffix)
+    }
+
+    protected fun findServiceName(clz: KClass<*>, prefix: String?, suffix: String?): String {
         val serviceName = interfaces.getOrPut(clz) {
             val serviceInterface = AnnotationUtils.findAnnotation(clz.java, ServiceInterface::class.java)
             if (serviceInterface != null) {
