@@ -102,7 +102,7 @@ abstract class Client constructor(
             .options(Request.Options(10000, 30000))
             .requestInterceptor(SpringContextUtil.getBean(RequestInterceptor::class.java,
                 "devopsRequestInterceptor"))
-            .target(DevopsServiceTarget(findServiceName(clz.kotlin),  clz, allProperties.devopsDevUrl
+            .target(DevopsServiceTarget(findServiceName(clz.kotlin,"",""),  clz, allProperties.devopsDevUrl
                 ?: ""))
         val devopsProxy = DevopsProxy(feignProxy, clz)
         return clz.cast(Proxy.newProxyInstance(feignProxy.javaClass.classLoader,
