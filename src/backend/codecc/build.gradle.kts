@@ -7,7 +7,7 @@ plugins {
 
 allprojects {
     group = "com.tencent.bk.codecc"
-    version = "1.7.37"
+    version = "1.7.37-RELEASE"
 
     apply(plugin = "com.tencent.devops.boot")
 
@@ -50,6 +50,8 @@ allprojects {
             all { exclude(group = "io.undertow", module = "undertow-websockets-jsr") }
         }
     }
+
+
 
     dependencyManagement {
 
