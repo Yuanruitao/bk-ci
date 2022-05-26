@@ -48,9 +48,7 @@
         data () {
             return {
                 selectedList: {},
-                hasRedPoint: {
-                    checkerCategory: window.localStorage.getItem('redtips-category-cloc-20200704') ? [] : ['CODE_STATISTIC']
-                }
+                hasRedPoint: {}
             }
         },
         computed: {
