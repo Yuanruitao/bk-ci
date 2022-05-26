@@ -36,16 +36,21 @@ public class BkRepoApi {
 
     public String genericSimpleUpload(String filepath, File file) {
         String url = String.format("%s://%s/generic/%s/%s/%s", bkrepoSchema, bkrepoHost, project, repo, filepath);
-        OkhttpUtils.INSTANCE.doFileStreamPut(url, file, getAuthHeaders());
+        Map<String, String> headers = getAuthHeaders();
+        headers.put("X-BKREPO-OVERWRITE", "true");
+        OkhttpUtils.INSTANCE.doFileStreamPut(url, file, headers);
         return url + "?download=true";
     }
 
     public String startChunk(String filepath) throws Exception {
         String url = String.format("%s://%s/generic/block/%s/%s/%s", bkrepoSchema, bkrepoHost, project, repo, filepath);
-        String resp = OkhttpUtils.INSTANCE.doHttpPost(url, "{}",getAuthHeaders());
+        Map<String, String> headers = getAuthHeaders();
+        headers.put("X-BKREPO-OVERWRITE", "true");
+        String resp = OkhttpUtils.INSTANCE.doHttpPost(url, "{}", headers);
         BkRepoResult<BkRepoStartChunkVo> result =
-                JsonUtil.INSTANCE.to(resp, new TypeReference<BkRepoResult<BkRepoStartChunkVo>>(){});
-        if(result == null || !result.isOk() || result.getData() == null){
+                JsonUtil.INSTANCE.to(resp, new TypeReference<BkRepoResult<BkRepoStartChunkVo>>() {
+                });
+        if (result == null || !result.isOk() || result.getData() == null) {
             throw new Exception("startChunk : " + filepath + " return " +
                     JsonUtil.INSTANCE.toJson(result) + " cause error.");
         }
@@ -53,9 +58,9 @@ public class BkRepoApi {
     }
 
 
-    public Boolean genericChunkUpload(String filepath, File file,Integer chunkNo,String uploadId) {
+    public Boolean genericChunkUpload(String filepath, File file, Integer chunkNo, String uploadId) {
         String url = String.format("%s://%s/generic/%s/%s/%s", bkrepoSchema, bkrepoHost, project, repo, filepath);
-        Map<String,String> headers = getAuthHeaders();
+        Map<String, String> headers = getAuthHeaders();
         if (chunkNo != null) {
             headers.put("X-BKREPO-SEQUENCE", chunkNo.toString());
         }
@@ -68,7 +73,7 @@ public class BkRepoApi {
 
     public String genericFinishChunk(String filepath, String uploadId) {
         String url = String.format("%s://%s/generic/block/%s/%s/%s", bkrepoSchema, bkrepoHost, project, repo, filepath);
-        Map<String,String> headers = getAuthHeaders();
+        Map<String, String> headers = getAuthHeaders();
         if (StringUtils.hasLength(uploadId)) {
             headers.put("X-BKREPO-UPLOAD-ID", uploadId);
         }
@@ -78,6 +83,7 @@ public class BkRepoApi {
 
     /**
      * 认证头信息
+     *
      * @return
      */
     public Map<String, String> getAuthHeaders() {
@@ -90,6 +96,7 @@ public class BkRepoApi {
 
     /**
      * 设置上传文件的超时信息
+     *
      * @param headers
      * @param expires
      * @return
@@ -102,7 +109,6 @@ public class BkRepoApi {
         newHeaders.put("X-BKREPO-EXPIRES", expires.toString());
         return headers;
     }
-
 
 
 }
