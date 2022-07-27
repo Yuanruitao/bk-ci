@@ -94,8 +94,15 @@ public class PipelineTaskRegisterServiceImpl extends AbstractTaskRegisterService
     @Override
     public TaskIdVO registerTask(TaskDetailVO taskDetailVO, String userName)
     {
+        if (StringUtils.isBlank(taskDetailVO.getMultiPipelineMark())) {
+            taskDetailVO.setMultiPipelineMark(null);
+        }
         setCreateFrom(taskDetailVO);
-        taskDetailVO.setNameCn(handleCnName(taskDetailVO.getPipelineName()));
+        String nameCn = handleCnName(taskDetailVO.getPipelineName());
+        if (StringUtils.isNotBlank(taskDetailVO.getMultiPipelineMark())) {
+            nameCn = String.format("%s(%s)", nameCn, taskDetailVO.getMultiPipelineMark());
+        }
+        taskDetailVO.setNameCn(nameCn);
 
         TaskInfoEntity taskInfoEntity;
         if (taskDetailVO.getTaskId() > 0L)
@@ -104,7 +111,18 @@ public class PipelineTaskRegisterServiceImpl extends AbstractTaskRegisterService
         }
         else if (StringUtils.isNotEmpty(taskDetailVO.getPipelineId()))
         {
-            taskInfoEntity = taskRepository.findFirstByPipelineId(taskDetailVO.getPipelineId());
+            //先判断，如果超过50条流水线，则报错
+            Long pipelineNum = taskRepository.countByPipelineId(taskDetailVO.getPipelineId());
+            if (pipelineNum >= 50L) {
+                log.info(String.format("pipeline number with id: %s is larger than 50", pipelineNum));
+                throw new CodeCCException(CommonMessageCode.PARAMETER_IS_INVALID,
+                        new String[]{String.valueOf(taskDetailVO.getPipelineId())}, null);
+            }
+            /*
+             * 添加一条流水线对应多个代码扫描任务的逻辑
+             */
+            taskInfoEntity = taskRepository.findFirstByPipelineIdAndMultiPipelineMark(taskDetailVO.getPipelineId(),
+                    taskDetailVO.getMultiPipelineMark());
         }
         else
         {
@@ -170,24 +188,23 @@ public class PipelineTaskRegisterServiceImpl extends AbstractTaskRegisterService
             upsertTools(taskDetailVO, taskInfoEntity, userName);
         }
         //来自个性化触发且未注册
-        else if (taskInfoEntity == null)
-        {
+        else {
             log.info("begin to create task");
             if (StringUtils.isNotEmpty(taskDetailVO.getDevopsCodeLang()))
             {
                 taskDetailVO.setCodeLang(pipelineService.convertDevopsCodeLangToCodeCC(taskDetailVO.getDevopsCodeLang()));
             }
-            String nameEn = getTaskStreamName(taskDetailVO.getProjectId(), taskDetailVO.getPipelineId(), taskDetailVO.getCreateFrom());
+            String finalPipelineId = taskDetailVO.getPipelineId();
+            if (StringUtils.isNotBlank(taskDetailVO.getMultiPipelineMark())) {
+                finalPipelineId = String.format("%s_%s", finalPipelineId, taskDetailVO.getMultiPipelineMark());
+            }
+            String nameEn = getTaskStreamName(taskDetailVO.getProjectId(), finalPipelineId,
+                    taskDetailVO.getCreateFrom());
             taskDetailVO.setNameEn(nameEn);
             taskInfoEntity = createTask(taskDetailVO, userName);
 
             //添加或者更新工具配置
             upsertTools(taskDetailVO, taskInfoEntity, userName);
-        }
-        else
-        {
-            log.error("Project status exception! bs_pipeline_id={}", taskDetailVO.getPipelineId());
-            throw new CodeCCException(CommonMessageCode.RECORD_NOT_EXITS, new String[]{"项目信息"}, null);
         }
 
         log.info("register task from pipeline successfully! task: {}", taskInfoEntity);

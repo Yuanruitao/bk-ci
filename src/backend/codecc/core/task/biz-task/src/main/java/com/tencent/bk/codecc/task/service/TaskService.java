@@ -184,6 +184,17 @@ public interface TaskService
      */
     Boolean stopTask(String pipelineId, String disabledReason, String userName);
 
+    /**
+     * 停用单个流水线任务
+     * @param pipelineId
+     * @param multiPipelineMark
+     * @param disabledReason
+     * @param userName
+     * @return
+     */
+    Boolean stopSinglePipelineTask(String pipelineId, String multiPipelineMark,
+                                   String disabledReason, String userName);
+
 
     /**
      * 停用任务
@@ -282,7 +293,15 @@ public interface TaskService
      * @param user
      * @return
      */
-    PipelineTaskVO getTaskInfoByPipelineId(String pipelineId, String user);
+    PipelineTaskVO getTaskInfoByPipelineId(String pipelineId, String multiPipelineMark, String user);
+
+    /**
+     * 通过流水线信息获取任务id
+     * @param pipelineId
+     * @param multiPipelineMark
+     * @return
+     */
+    Long getTaskIdByPipelineInfo(String pipelineId, String multiPipelineMark);
 
 
     /**

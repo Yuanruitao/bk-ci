@@ -27,6 +27,7 @@
 package com.tencent.bk.codecc.defect.service;
 
 import com.tencent.bk.codecc.defect.model.SnapShotEntity;
+import com.tencent.bk.codecc.defect.vo.common.SnapShotVO;
 
 /**
  * 快照服务接口
@@ -49,6 +50,16 @@ public interface SnapShotService
      */
     SnapShotEntity saveToolBuildSnapShot(long taskId, String projectId, String pipelineId, String buildId,
                                          String resultStatus, String resultMessage, String toolName);
+
+
+    /**
+     * 查找快照信息
+     *
+     * @param projectId
+     * @param buildId
+     * @param taskId
+     */
+    SnapShotVO getTaskToolBuildSnapShot(String projectId, String buildId, long taskId);
 
 
 }

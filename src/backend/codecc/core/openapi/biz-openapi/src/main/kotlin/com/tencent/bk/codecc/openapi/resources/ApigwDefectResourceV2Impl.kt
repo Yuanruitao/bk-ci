@@ -76,8 +76,10 @@ open class ApigwDefectResourceV2Impl @Autowired constructor(
         return client.getWithoutRetry(ServiceTaskRestResource::class).queryDeptIdByBgId(bgId)
     }
 
-    override fun getPipelineTask(pipelineId: String, user: String?): Result<PipelineTaskVO> {
-        return client.getWithoutRetry(ServiceTaskRestResource::class).getPipelineTask(pipelineId, user)
+    override fun getPipelineTask(pipelineId: String, multiPipelineMark: String?,
+                                 user: String?): Result<PipelineTaskVO> {
+        return client.getWithoutRetry(ServiceTaskRestResource::class).getPipelineTask(pipelineId,
+            multiPipelineMark, user)
     }
 
     override fun triggerCustomPipeline(

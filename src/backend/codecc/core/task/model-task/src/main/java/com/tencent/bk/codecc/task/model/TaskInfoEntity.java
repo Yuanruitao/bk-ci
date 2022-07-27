@@ -124,6 +124,9 @@ public class TaskInfoEntity extends CommonEntity {
     @Field("pipeline_id")
     private String pipelineId;
 
+    @Field("multi_pipeline_mark")
+    private String multiPipelineMark;
+
     /**
      * 项目创建来源
      */

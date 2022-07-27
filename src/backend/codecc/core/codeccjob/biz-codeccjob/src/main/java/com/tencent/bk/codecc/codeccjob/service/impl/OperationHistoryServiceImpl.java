@@ -60,6 +60,7 @@ public class OperationHistoryServiceImpl implements OperationHistoryService {
             taskId = Objects.requireNonNull(
                 client.get(ServiceTaskRestResource.class).getPipelineTask(
                     operationHistoryDTO.getPipelineId(),
+                    operationHistoryDTO.getMultiPipelineMark(),
                     operationHistoryDTO.getOperator())
                     .getData())
                 .getTaskId();

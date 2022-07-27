@@ -170,8 +170,8 @@ public class GetTaskLogServiceImpl implements GetTaskLogService {
      */
     @Override
     public QueryLogRepVO queryAnalysisLog(String userId, String projectId, String pipelineId, String buildId,
-                                          String queryKeywords, String tag) {
-        validatePermission(pipelineId);
+                                          String queryKeywords, String tag, String multiPipelineMark) {
+        validatePermission(pipelineId, multiPipelineMark);
         return logService.getAnalysisLog(userId, projectId, pipelineId, buildId, queryKeywords, tag);
     }
 
@@ -193,8 +193,9 @@ public class GetTaskLogServiceImpl implements GetTaskLogService {
     @Override
     // NOCC:ParameterNumber(设计如此:)
     public QueryLogRepVO getMoreLogs(String userId, String projectId, String pipelineId, String buildId, Integer num,
-                                     Boolean fromStart, Long start, Long end, String tag, Integer executeCount) {
-        validatePermission(pipelineId);
+                                     Boolean fromStart, Long start, Long end, String tag,
+                                     Integer executeCount, String multiPipelineMark) {
+        validatePermission(pipelineId, multiPipelineMark);
         return logService.getMoreLogs(userId, projectId, pipelineId, buildId, num,
                 fromStart, start, end, tag, executeCount);
     }
@@ -211,8 +212,8 @@ public class GetTaskLogServiceImpl implements GetTaskLogService {
      */
     @Override
     public void downloadLogs(String userId, String projectId, String pipelineId, String buildId,
-                             String tag, Integer executeCount) {
-        validatePermission(pipelineId);
+                             String tag, Integer executeCount, String multiPipelineMark) {
+        validatePermission(pipelineId, multiPipelineMark);
         logService.downloadLogs(userId, projectId, pipelineId, buildId, tag, executeCount);
     }
 
@@ -230,8 +231,9 @@ public class GetTaskLogServiceImpl implements GetTaskLogService {
     @Override
     // NOCC:ParameterNumber(设计如此:)
     public QueryLogRepVO getAfterLogs(String userId, String projectId, String pipelineId, String buildId,
-                                      Long start, String queryKeywords, String tag, Integer executeCount) {
-        validatePermission(pipelineId);
+                                      Long start, String queryKeywords, String tag,
+                                      Integer executeCount, String multiPipelineMark) {
+        validatePermission(pipelineId, multiPipelineMark);
         return logService.getAfterLogs(userId, projectId, pipelineId, buildId, start,
                 queryKeywords, tag, executeCount);
     }
@@ -342,13 +344,13 @@ public class GetTaskLogServiceImpl implements GetTaskLogService {
      *
      * @param pipelineId
      */
-    private void validatePermission(String pipelineId) {
+    private void validatePermission(String pipelineId, String multiPipelineMark) {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         String userName = request.getHeader(AUTH_HEADER_DEVOPS_USER_ID);
 
         Result<PipelineTaskVO> taskInfo =
-                client.get(ServiceTaskRestResource.class).getPipelineTask(pipelineId, "");
+                client.get(ServiceTaskRestResource.class).getPipelineTask(pipelineId, multiPipelineMark, "");
         if (taskInfo.isNotOk() || null == taskInfo.getData()) {
             logger.error("get task detail info fail! pipeline id: {}", pipelineId);
             throw new CodeCCException(CommonMessageCode.INTERNAL_SYSTEM_FAIL);

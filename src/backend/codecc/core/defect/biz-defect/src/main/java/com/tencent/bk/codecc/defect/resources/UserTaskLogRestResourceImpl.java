@@ -80,32 +80,34 @@ public class UserTaskLogRestResourceImpl implements UserTaskLogRestResource {
 
     @Override
     public Result<QueryLogRepVO> getAnalysisLogs(String userId, String projectId, String pipelineId,
-                                                 String buildId, String queryKeywords, String tag) {
-        return new Result<>(getTaskLogService.queryAnalysisLog(userId, projectId, pipelineId, buildId, queryKeywords, tag));
+                                                 String buildId, String queryKeywords, String tag,
+                                                 String multiPipelineMark) {
+        return new Result<>(getTaskLogService.queryAnalysisLog(userId, projectId,
+                pipelineId, buildId, queryKeywords, tag, multiPipelineMark));
     }
 
     @Override
     // NOCC:ParameterNumber(设计如此:)
     public Result<QueryLogRepVO> getMoreLogs(String userId, String projectId, String pipelineId,
                                              String buildId, Integer num, Boolean fromStart, Long start,
-                                             Long end, String tag, Integer executeCount) {
+                                             Long end, String tag, Integer executeCount, String multiPipelineMark) {
         return new Result<>(getTaskLogService.getMoreLogs(userId, projectId, pipelineId, buildId, num,
-                fromStart, start, end, tag, executeCount));
+                fromStart, start, end, tag, executeCount, multiPipelineMark));
     }
 
     @Override
     public void downloadLogs(String userId, String projectId, String pipelineId, String buildId,
-                             String tag, Integer executeCount) {
-        getTaskLogService.downloadLogs(userId, projectId, pipelineId, buildId, tag, executeCount);
+                             String tag, Integer executeCount, String multiPipelineMark) {
+        getTaskLogService.downloadLogs(userId, projectId, pipelineId, buildId, tag, executeCount, multiPipelineMark);
     }
 
     @Override
     // NOCC:ParameterNumber(设计如此:)
     public Result<QueryLogRepVO> getAfterLogs(String userId, String projectId, String pipelineId,
                                               String buildId, Long start, String queryKeywords,
-                                              String tag, Integer executeCount) {
+                                              String tag, Integer executeCount, String multiPipelineMark) {
         return new Result<>(getTaskLogService.getAfterLogs(userId, projectId, pipelineId, buildId,
-                start, queryKeywords, tag, executeCount));
+                start, queryKeywords, tag, executeCount, multiPipelineMark));
     }
 
 

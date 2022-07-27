@@ -164,6 +164,13 @@ public class ServiceTaskRestResourceImpl implements ServiceTaskRestResource
     }
 
     @Override
+    public Result<Boolean> stopSingleTaskByPipeline(String pipelineId, String multiPipelineMark,
+                                                    String disabledReason, String userName) {
+        return new Result<>(taskService.stopSinglePipelineTask(pipelineId, multiPipelineMark, disabledReason,
+                userName));
+    }
+
+    @Override
     public Result<Boolean> checkTaskExists(Long taskId)
     {
         return new Result<>(taskService.checkTaskExists(taskId));
@@ -176,9 +183,14 @@ public class ServiceTaskRestResourceImpl implements ServiceTaskRestResource
     }
 
     @Override
-    public Result<PipelineTaskVO> getPipelineTask(String pipelineId, String user)
+    public Result<PipelineTaskVO> getPipelineTask(String pipelineId, String multiPipelineMark, String user)
     {
-        return new Result<>(taskService.getTaskInfoByPipelineId(pipelineId, user));
+        return new Result<>(taskService.getTaskInfoByPipelineId(pipelineId, multiPipelineMark, user));
+    }
+
+    @Override
+    public Result<Long> getTaskIdByPipelineInfo(String pipelineId, String multiPipelineMark) {
+        return new Result<>(taskService.getTaskIdByPipelineInfo(pipelineId, multiPipelineMark));
     }
 
     @Override

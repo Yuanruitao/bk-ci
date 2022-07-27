@@ -60,7 +60,7 @@ public interface GetTaskLogService {
      * @return
      */
     QueryLogRepVO queryAnalysisLog(String userId, String projectId, String pipelineId, String buildId,
-                                   String queryKeywords, String tag);
+                                   String queryKeywords, String tag, String multiPipelineMark);
 
 
     /**
@@ -74,7 +74,8 @@ public interface GetTaskLogService {
      */
     // NOCC:ParameterNumber(设计如此:)
     QueryLogRepVO getMoreLogs(String userId, String projectId, String pipelineId, String buildId, Integer num,
-                              Boolean fromStart, Long start, Long end, String tag, Integer executeCount);
+                              Boolean fromStart, Long start, Long end, String tag,
+                              Integer executeCount, String multiPipelineMark);
 
 
     /**
@@ -88,7 +89,7 @@ public interface GetTaskLogService {
      * @return
      */
     void downloadLogs(String userId, String projectId, String pipelineId, String buildId,
-                      String tag, Integer executeCount);
+                      String tag, Integer executeCount, String multiPipelineMark);
 
 
     /**
@@ -103,7 +104,8 @@ public interface GetTaskLogService {
      */
     // NOCC:ParameterNumber(设计如此:)
     QueryLogRepVO getAfterLogs(String userId, String projectId, String pipelineId, String buildId,
-                               Long start, String queryKeywords, String tag, Integer executeCount);
+                               Long start, String queryKeywords, String tag,
+                               Integer executeCount, String multiPipelineMark);
 
     /**
      * 获取活跃任务列表(是否活跃看时间区间内 任务的任意工具有成功分析的记录都为活跃)

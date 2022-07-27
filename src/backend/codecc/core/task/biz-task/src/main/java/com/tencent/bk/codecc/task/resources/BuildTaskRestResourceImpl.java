@@ -85,8 +85,8 @@ public class BuildTaskRestResourceImpl implements BuildTaskRestResource
     }
 
     @Override
-    public Result<PipelineTaskVO> getTaskInfoByPipelineId(String pipelineId, String userId) {
-        return new Result<>(taskService.getTaskInfoByPipelineId(pipelineId, userId));
+    public Result<PipelineTaskVO> getTaskInfoByPipelineId(String pipelineId, String multiPipelineMark, String userId) {
+        return new Result<>(taskService.getTaskInfoByPipelineId(pipelineId, multiPipelineMark, userId));
     }
 
     @Override

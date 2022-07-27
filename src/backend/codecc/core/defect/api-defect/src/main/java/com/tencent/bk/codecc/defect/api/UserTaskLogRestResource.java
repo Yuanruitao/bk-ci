@@ -106,7 +106,10 @@ public interface UserTaskLogRestResource
                     String queryKeywords,
             @ApiParam(value = "对应elementId")
             @QueryParam("tag")
-                    String tag
+                    String tag,
+            @ApiParam("单流水线对应多任务标识")
+            @QueryParam("multiPipelineMark")
+                    String multiPipelineMark
     );
 
     @ApiOperation("获取更多日志")
@@ -143,7 +146,10 @@ public interface UserTaskLogRestResource
                     String tag,
             @ApiParam(value = "执行次数")
             @QueryParam("executeCount")
-                    Integer executeCount
+                    Integer executeCount,
+            @ApiParam("单流水线对应多任务标识")
+            @QueryParam("multiPipelineMark")
+                    String multiPipelineMark
     );
 
 
@@ -169,7 +175,10 @@ public interface UserTaskLogRestResource
                     String tag,
             @ApiParam(value = "执行次数")
             @QueryParam("executeCount")
-                    Integer executeCount
+                    Integer executeCount,
+            @ApiParam("单流水线对应多任务标识")
+            @QueryParam("multiPipelineMark")
+                    String multiPipelineMark
     );
 
 
@@ -201,7 +210,10 @@ public interface UserTaskLogRestResource
                     String tag,
             @ApiParam(value = "执行次数")
             @QueryParam("executeCount")
-                    Integer executeCount
+                    Integer executeCount,
+            @ApiParam("单流水线对应多任务标识")
+            @QueryParam("multiPipelineMark")
+                    String multiPipelineMark
     );
 
 

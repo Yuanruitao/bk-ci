@@ -71,6 +71,9 @@ public class TaskBaseVO extends CommonVO
     @ApiModelProperty(value = "流水线ID", required = true)
     private String pipelineId;
 
+    @ApiModelProperty(value = "流水线一对多标识", required = false)
+    private String multiPipelineMark;
+
     @ApiModelProperty(value = "流水线名称", required = true)
     private String pipelineName;
 
