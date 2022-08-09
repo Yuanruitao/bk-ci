@@ -23,10 +23,9 @@ class GithubAuthExPermissionApi(client: Client,
 
     override fun queryTaskListForUser(user: String, projectId: String, actions: Set<String>): Set<String> {
         val realActions = actions.map { buildAction(CodeCCAuthResourceType.CODECC_TASK.value, it) }.toList()
-        val result = client.get(ServicePermissionAuthResource::class.java).getUserResourcesByPermissions(
-            user,
-            properties.token ?: "", realActions, projectId, CodeCCAuthResourceType.CODECC_TASK.value
-        )
+        val result = client.getDevopsService(ServicePermissionAuthResource::class.java)
+            .getUserResourcesByPermissions(user, properties.token ?: "", realActions, projectId,
+                CodeCCAuthResourceType.CODECC_TASK.value)
         if (result.isNotOk() || result.data.isNullOrEmpty()) {
             return emptySet()
         }
