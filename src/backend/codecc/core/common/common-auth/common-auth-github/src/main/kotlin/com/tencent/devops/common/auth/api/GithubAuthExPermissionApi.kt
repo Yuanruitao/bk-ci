@@ -22,9 +22,8 @@ class GithubAuthExPermissionApi(client: Client,
     }
 
     override fun queryTaskListForUser(user: String, projectId: String, actions: Set<String>): Set<String> {
-        val realActions = actions.map { buildAction(CodeCCAuthResourceType.CODECC_TASK.value, it) }.toList()
         val result = client.getDevopsService(ServicePermissionAuthResource::class.java)
-            .getUserResourcesByPermissions(user, properties.token ?: "", realActions, projectId,
+            .getUserResourcesByPermissions(user, properties.token ?: "", actions.toList(), projectId,
                 CodeCCAuthResourceType.CODECC_TASK.value)
         if (result.isNotOk() || result.data.isNullOrEmpty()) {
             return emptySet()
@@ -54,11 +53,4 @@ class GithubAuthExPermissionApi(client: Client,
         return true
     }
 
-    private fun buildAction(authResourceType: String, permission: String): String {
-        return if (permission == AuthPermission.LIST.value) {
-            "${authResourceType}_${AuthPermission.VIEW.value}"
-        } else {
-            "${authResourceType}_${permission}"
-        }
-    }
 }

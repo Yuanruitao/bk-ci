@@ -24,7 +24,7 @@ DEFECT_BACKENDS=(defect report opensourcereport asyncreport)
 
 cd $(dirname $0)
 WORKING_DIR=$(pwd)
-ROOT_DIR=${WORKING_DIR%/*/*/*}
+ROOT_DIR=${WORKING_DIR%/*/*/*/*}
 BACKEND_DIR=$ROOT_DIR/src/backend/codecc
 FRONTEND_DIR=$ROOT_DIR/src/frontend
 GATEWAY_DIR=$ROOT_DIR/support-files/kubernetes/images/gateway/conf
