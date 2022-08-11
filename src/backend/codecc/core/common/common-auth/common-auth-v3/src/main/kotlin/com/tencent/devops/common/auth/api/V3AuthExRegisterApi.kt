@@ -1,7 +1,7 @@
 package com.tencent.devops.common.auth.api
 
 import com.tencent.devops.common.auth.api.external.AuthExRegisterApi
-import com.tencent.devops.common.auth.api.pojo.external.CodeCCAuthResourceType
+import com.tencent.devops.common.auth.pojo.CodeCCAuthResourceType
 import com.tencent.devops.common.auth.utils.CodeCCAuthResourceApi
 import org.springframework.beans.factory.annotation.Autowired
 

@@ -104,4 +104,9 @@ class DefectAuthTaskServiceImpl @Autowired constructor(
     override fun queryTaskListByPipelineIds(pipelineIds: Set<String>): Set<String> {
         return client.get(ServiceTaskRestResource::class.java).queryTaskListByPipelineIds(pipelineIds).data ?: setOf()
     }
+
+    override fun queryPipelineIdsByTaskIds(taskIds: Set<Long>): Set<String> {
+        return client.get(ServiceTaskRestResource::class.java).getTaskInfosByIds(taskIds.toList()).data
+            ?.filter { it != null && !it.pipelineId.isNullOrEmpty() }?.map { it.pipelineId }?.toSet() ?: emptySet()
+    }
 }

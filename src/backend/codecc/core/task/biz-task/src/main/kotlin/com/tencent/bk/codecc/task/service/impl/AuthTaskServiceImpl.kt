@@ -83,4 +83,8 @@ class AuthTaskServiceImpl @Autowired constructor(
     override fun queryTaskListByPipelineIds(pipelineIds: Set<String>): Set<String> {
         return taskRepository.findByPipelineIdIn(pipelineIds).map { it.taskId.toString() }.toSet()
     }
+
+    override fun queryPipelineIdsByTaskIds(taskIds: Set<Long>): Set<String> {
+        return taskRepository.findByTaskIdIn(taskIds).filter { it.pipelineId != null }.map { it.pipelineId }.toSet()
+    }
 }

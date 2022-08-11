@@ -1,4 +1,4 @@
-package com.tencent.devops.common.auth.api.pojo.external
+package com.tencent.devops.common.auth.pojo
 
 
 /*

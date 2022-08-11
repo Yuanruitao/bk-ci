@@ -4,44 +4,71 @@ import com.tencent.devops.auth.api.service.ServicePermissionAuthResource
 import com.tencent.devops.common.auth.api.external.AbstractAuthExPermissionApi
 import com.tencent.devops.common.auth.api.external.AuthTaskService
 import com.tencent.devops.common.auth.api.pojo.external.CodeCCAuthAction
-import com.tencent.devops.common.auth.api.pojo.external.CodeCCAuthResourceType
 import com.tencent.devops.common.auth.api.pojo.external.model.BkAuthExResourceActionModel
 import com.tencent.devops.common.auth.pojo.GithubAuthProperties
+import com.tencent.devops.common.auth.utils.AuthActionConvertUtils
 import com.tencent.devops.common.client.Client
 import org.springframework.data.redis.core.RedisTemplate
 
 class GithubAuthExPermissionApi(client: Client,
                                 redisTemplate: RedisTemplate<String, String>,
+                                private val authTaskService: AuthTaskService,
                                 private val properties : GithubAuthProperties)
     : AbstractAuthExPermissionApi(
     client,
     redisTemplate) {
 
-    override fun queryPipelineListForUser(user: String, projectId: String, actions: Set<String>): Set<String> {
-        return emptySet()
-    }
-
-    override fun queryTaskListForUser(user: String, projectId: String, actions: Set<String>): Set<String> {
+    override fun  queryPipelineListForUser(user: String, projectId: String, actions: Set<String>): Set<String> {
         val result = client.getDevopsService(ServicePermissionAuthResource::class.java)
-            .getUserResourcesByPermissions(user, properties.token ?: "", actions.toList(), projectId,
-                CodeCCAuthResourceType.CODECC_TASK.value)
+            .getUserResourcesByPermissions(
+                user, properties.token ?: "", actions.toList(), projectId,
+                properties.pipelineResourceType ?: "pipeline"
+            )
         if (result.isNotOk() || result.data.isNullOrEmpty()) {
             return emptySet()
         }
-        val taskIds = mutableSetOf<String>()
-        result.data!!.forEach { entry -> taskIds.addAll(entry.value) }
-        return taskIds
+        val pipelineIds = mutableSetOf<String>()
+        result.data!!.forEach { entry -> pipelineIds.addAll(entry.value) }
+        return pipelineIds
+    }
+
+    override fun queryTaskListForUser(user: String, projectId: String, actions: Set<String>): Set<String> {
+        val codeccActions = actions.mapNotNull { it ->
+            var action: CodeCCAuthAction? = null
+            for (value in CodeCCAuthAction.values()) {
+                if (value.actionName == it) {
+                    action = value
+                    break
+                }
+            }
+            action
+        }.toList()
+        val pipelineActions = AuthActionConvertUtils.covert(codeccActions).map { it.actionName }.toSet()
+        val pipelineIds = queryPipelineListForUser(user, projectId, pipelineActions)
+        return if (pipelineIds.isEmpty()) {
+            emptySet()
+        } else {
+            authTaskService.queryTaskListByPipelineIds(pipelineIds)
+        }
     }
 
     override fun queryTaskUserListForAction(taskId: String, projectId: String, actions: Set<String>): List<String> {
-        return emptyList()
+        return authTaskService.queryTaskUserListForAction(taskId, projectId, actions)
     }
 
     override fun validatePipelineBatchPermission(user: String, pipelineId: String, projectId: String, actions: Set<String>): List<BkAuthExResourceActionModel> {
-        return listOf(BkAuthExResourceActionModel("", "", listOf(), true))
+        val pipelineIds = queryPipelineListForUser(user,projectId,actions)
+        if(pipelineIds.isNotEmpty() && pipelineIds.contains(pipelineId)){
+            return listOf(BkAuthExResourceActionModel("", "", listOf(), true))
+        }
+        return listOf(BkAuthExResourceActionModel("", "", listOf(), false))
     }
 
     override fun validateTaskBatchPermission(user: String, taskId: String, projectId: String, actions: Set<String>): List<BkAuthExResourceActionModel> {
+        val taskIds = queryTaskListForUser(user,projectId,actions)
+        if(taskIds.isNotEmpty() && taskIds.contains(taskId)){
+            return listOf(BkAuthExResourceActionModel("", "", listOf(), true))
+        }
         return listOf(BkAuthExResourceActionModel(isPass = true))
     }
 
@@ -50,7 +77,8 @@ class GithubAuthExPermissionApi(client: Client,
     }
 
     override fun authProjectManager(projectId: String, user: String): Boolean {
-        return true
+        return false
     }
+
 
 }

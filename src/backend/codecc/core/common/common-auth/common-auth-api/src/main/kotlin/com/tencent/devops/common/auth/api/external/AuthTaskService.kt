@@ -41,4 +41,6 @@ interface AuthTaskService {
     fun queryTaskUserListForAction(taskId: String, projectId: String, actions: Set<String>): List<String>
 
     fun queryTaskListByPipelineIds(pipelineIds: Set<String>): Set<String>
+
+    fun queryPipelineIdsByTaskIds(taskIds: Set<Long>): Set<String>
 }

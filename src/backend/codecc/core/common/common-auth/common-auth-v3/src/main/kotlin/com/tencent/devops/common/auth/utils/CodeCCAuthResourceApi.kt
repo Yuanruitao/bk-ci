@@ -3,8 +3,8 @@ package com.tencent.devops.common.auth.utils
 import com.tencent.bk.sdk.iam.config.IamConfiguration
 import com.tencent.devops.common.auth.api.AuthResourceType
 import com.tencent.devops.common.auth.api.pojo.AncestorsApiReq
-import com.tencent.devops.common.auth.api.pojo.external.CodeCCAuthResourceType
 import com.tencent.devops.common.auth.api.pojo.EsbCreateApiReq
+import com.tencent.devops.common.auth.pojo.CodeCCAuthResourceType
 import com.tencent.devops.common.auth.service.IamEsbService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

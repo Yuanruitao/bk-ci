@@ -57,13 +57,15 @@ class GithubAuthExAutoConfiguration() {
 
     @Bean
     fun authExPermissionApi(
-        redisTemplate: RedisTemplate<String, String>, client: Client, properties: GithubAuthProperties
-    ) = GithubAuthExPermissionApi(client, redisTemplate, properties)
+        redisTemplate: RedisTemplate<String, String>, client: Client, authTaskService: AuthTaskService,
+        properties: GithubAuthProperties
+    ) = GithubAuthExPermissionApi(client, redisTemplate, authTaskService, properties)
 
     @Bean
     @Primary
-    fun authExRegisterApi(redisTemplate: RedisTemplate<String, String>) =
-        GithubAuthExRegisterApi()
+    fun authExRegisterApi(redisTemplate: RedisTemplate<String, String>, authTaskService: AuthTaskService,
+                          client: Client, properties: GithubAuthProperties) =
+        GithubAuthExRegisterApi(client, authTaskService, properties)
 
     @Bean
     @ConfigurationProperties(prefix = "auth.github")
