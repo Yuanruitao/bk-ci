@@ -27,7 +27,7 @@ WORKING_DIR=$(pwd)
 ROOT_DIR=${WORKING_DIR%/*/*/*/*}
 BACKEND_DIR=$ROOT_DIR/src/backend/codecc
 FRONTEND_DIR=$ROOT_DIR/src/frontend/devops-codecc
-GATEWAY_DIR=$ROOT_DIR/support-files/kubernetes/images/gateway/conf
+GATEWAY_DIR=$ROOT_DIR/support-files/codecc/kubernetes/images/gateway/conf
 
 usage () {
     cat <<EOF
