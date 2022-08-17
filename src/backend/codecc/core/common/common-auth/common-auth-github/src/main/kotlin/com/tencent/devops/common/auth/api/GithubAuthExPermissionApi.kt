@@ -28,7 +28,7 @@ class GithubAuthExPermissionApi(client: Client,
             return emptySet()
         }
         result.data!!.all { entry -> entry.value.contains("*")}
-        return authTaskService (user, projectId)
+        return authTaskService.queryPipelineListByProjectId(projectId)
     }
 
     override fun queryTaskListForUser(user: String, projectId: String, actions: Set<String>): Set<String> {
