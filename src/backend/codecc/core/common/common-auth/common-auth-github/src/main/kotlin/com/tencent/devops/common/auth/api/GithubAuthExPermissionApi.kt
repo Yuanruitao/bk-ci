@@ -27,9 +27,8 @@ class GithubAuthExPermissionApi(client: Client,
         if (result.isNotOk() || result.data.isNullOrEmpty()) {
             return emptySet()
         }
-        val pipelineIds = mutableSetOf<String>()
-        result.data!!.forEach { entry -> pipelineIds.addAll(entry.value) }
-        return pipelineIds
+        result.data!!.all { entry -> entry.value.contains("*")}
+        return authTaskService (user, projectId)
     }
 
     override fun queryTaskListForUser(user: String, projectId: String, actions: Set<String>): Set<String> {

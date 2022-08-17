@@ -86,6 +86,13 @@ class DefectAuthTaskServiceImpl @Autowired constructor(
             ?: setOf()
     }
 
+    override fun queryPipelineListByProjectId(projectId: String): Set<String> {
+        val request = QueryTaskListReqVO()
+        request.projectId = projectId
+        return client.get(ServiceTaskRestResource::class.java)
+            .batchGetTaskList(request).data?.map { it.pipelineId }?.toSet() ?: setOf()
+    }
+
     override fun queryTaskListForUser(user: String, projectId: String, actions: Set<String>): Set<String> {
         val request = QueryTaskListReqVO()
         request.projectId = projectId
