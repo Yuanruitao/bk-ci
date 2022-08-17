@@ -27,7 +27,7 @@ WORKING_DIR=$(pwd)
 ROOT_DIR=${WORKING_DIR%/*/*/*/*}
 BACKEND_DIR=$ROOT_DIR/src/backend/codecc
 FRONTEND_DIR=$ROOT_DIR/src/frontend/devops-codecc
-GATEWAY_DIR=$ROOT_DIR/support-files/codecc/kubernetes/images/gateway/conf
+GATEWAY_DIR=$ROOT_DIR/support-files/codecc/kubernetes/images/gateway
 
 usage () {
     cat <<EOF
@@ -142,11 +142,11 @@ if [[ $ALL -eq 1 || $GATEWAY -eq 1 ]] ; then
     cd $WORKING_DIR
     rm -rf tmp/*
     cp -rf $FRONTEND_DIR/dist tmp/frontend
-    cp -rf $GATEWAY_DIR tmp/gateway
-    cp -rf gateway/startup.sh tmp/
-    cp -rf $ROOT_DIR/scripts/render_tpl tmp/
-    cp -rf $ROOT_DIR/scripts/codecc.env tmp/
-    cp -rf $ROOT_DIR/support-files/templates tmp/
+    cp -rf $GATEWAY_DIR/conf tmp/gateway
+    cp -rf $GATEWAY_DIR/startup.sh tmp/
+    cp -rf $GATEWAY_DIR/scripts/render_tpl tmp/
+    cp -rf $GATEWAY_DIR/scripts/codecc.env tmp/
+    cp -rf $GATEWAY_DIR/templates tmp/
     docker build -f gateway/gateway.Dockerfile -t $REGISTRY/$NAMESPACE/${PERFIX}gateway:$VERSION tmp --network=host
     if [[ $PUSH -eq 1 ]] ; then
         docker push $REGISTRY/$NAMESPACE/${PERFIX}gateway:$VERSION
