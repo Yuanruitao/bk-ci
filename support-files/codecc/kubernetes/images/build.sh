@@ -19,8 +19,8 @@ NAMESPACE=bkce/codecc
 PERFIX=
 USERNAME=
 PASSWORD=
-BACKENDS=(task defect apiquery codeccjob openapi)
-DEFECT_BACKENDS=(defect report opensourcereport asyncreport)
+BACKENDS=(task defect apiquery codeccjob openapi quartz)
+DEFECT_BACKENDS=(defect report asyncreport)
 
 cd $(dirname $0)
 WORKING_DIR=$(pwd)
