@@ -13,6 +13,7 @@ import com.tencent.devops.common.client.proxy.DevopsProxy
 import com.tencent.devops.common.constant.ComConstants
 import com.tencent.devops.common.constant.CommonMessageCode
 import com.tencent.devops.common.util.HttpPathUrlUtil
+import com.tencent.devops.common.util.OkhttpUtils
 import com.tencent.devops.repository.api.ExternalCodeccRepoResource
 import com.tencent.devops.repository.api.ServiceGithubResource
 import com.tencent.devops.repository.api.ServiceOauthResource
@@ -219,21 +220,16 @@ class PipelineScmServiceImpl @Autowired constructor(
         reversion: String?,
         branch: String?
     ): String? {
+        if (projectId.startsWith("github_")) {
+            return getGithubFileContent(repoUrl, reversion ?: branch ?: "", filePath)
+        }
         val token = try {
-            val tokenResult = if (projectId.startsWith("github_")) {
-                client.getDevopsService(ServiceGithubResource::class.java, projectId).getAccessToken(userId)
-            } else {
-                client.getDevopsService(ServiceOauthResource::class.java, projectId).gitGet(userId)
-            }
+            val tokenResult = client.getDevopsService(ServiceOauthResource::class.java, projectId).gitGet(userId)
             if (tokenResult.data == null || tokenResult.isNotOk()) {
                 logger.error("can not get user repository token: $userId $repoUrl $filePath $reversion $branch")
                 throw CodeCCException(errorCode = CommonMessageCode.OAUTH_TOKEN_IS_INVALID)
             }
-            if (projectId.startsWith("github_")) {
-                (tokenResult.data!! as GithubToken).accessToken
-            } else {
-                (tokenResult.data!! as GitToken).accessToken
-            }
+            tokenResult.data!!.accessToken
         } catch (e: CodeCCException) {
             if (e.errorCode == CommonMessageCode.OAUTH_TOKEN_IS_INVALID) {
                 throw e
@@ -283,5 +279,24 @@ class PipelineScmServiceImpl @Autowired constructor(
 
 
         return fileContent
+    }
+
+    /**
+     * 获取 Github 文本内容
+     * 等待蓝盾支持后，切换到蓝盾的版本
+     */
+    private fun getGithubFileContent(repoUrl: String, ref: String, filePath: String): String {
+        val headerIndex = if (repoUrl.startsWith("https://")) {
+            8
+        } else if (repoUrl.startsWith("http://")) {
+            7
+        } else {
+            0
+        }
+        val startIndex = repoUrl.indexOf("/", headerIndex)
+        val endIndex = repoUrl.lastIndexOf(".git")
+        val projectName = repoUrl.substring(startIndex + 1, endIndex)
+        val url = "https://raw.githubusercontent.com/$projectName/$ref/$filePath"
+        return OkhttpUtils.doGet(url)
     }
 }
