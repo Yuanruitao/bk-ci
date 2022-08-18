@@ -14,10 +14,13 @@ import com.tencent.devops.common.constant.ComConstants
 import com.tencent.devops.common.constant.CommonMessageCode
 import com.tencent.devops.common.util.HttpPathUrlUtil
 import com.tencent.devops.repository.api.ExternalCodeccRepoResource
+import com.tencent.devops.repository.api.ServiceGithubResource
 import com.tencent.devops.repository.api.ServiceOauthResource
 import com.tencent.devops.repository.api.ServiceRepositoryResource
 import com.tencent.devops.repository.api.scm.ServiceGitResource
 import com.tencent.devops.repository.pojo.enums.RepoAuthType
+import com.tencent.devops.repository.pojo.github.GithubToken
+import com.tencent.devops.repository.pojo.oauth.GitToken
 import org.apache.commons.collections.CollectionUtils
 import org.apache.commons.lang.math.NumberUtils
 import org.apache.commons.lang3.RandomStringUtils
@@ -217,13 +220,20 @@ class PipelineScmServiceImpl @Autowired constructor(
         branch: String?
     ): String? {
         val token = try {
-            val tokenResult = client.getDevopsService(ServiceOauthResource::class.java, projectId).gitGet(userId)
+            val tokenResult = if (projectId.startsWith("github_")) {
+                client.getDevopsService(ServiceGithubResource::class.java, projectId).getAccessToken(userId)
+            } else {
+                client.getDevopsService(ServiceOauthResource::class.java, projectId).gitGet(userId)
+            }
             if (tokenResult.data == null || tokenResult.isNotOk()) {
                 logger.error("can not get user repository token: $userId $repoUrl $filePath $reversion $branch")
                 throw CodeCCException(errorCode = CommonMessageCode.OAUTH_TOKEN_IS_INVALID)
             }
-
-            tokenResult.data!!.accessToken
+            if (projectId.startsWith("github_")) {
+                (tokenResult.data!! as GithubToken).accessToken
+            } else {
+                (tokenResult.data!! as GitToken).accessToken
+            }
         } catch (e: CodeCCException) {
             if (e.errorCode == CommonMessageCode.OAUTH_TOKEN_IS_INVALID) {
                 throw e
