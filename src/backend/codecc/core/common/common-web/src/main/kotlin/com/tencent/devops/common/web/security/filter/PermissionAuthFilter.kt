@@ -86,7 +86,7 @@ class PermissionAuthFilter(
                 } else {
                     // 普通流水线在蓝鲸权限中心鉴权
                     val pipelieActions = PermissionUtil.getPipelinePermissionsFromActions(actions)
-                    val pipelinePermissionAuthResult = authExPermissionApi.validatePipelineBatchPermission(
+                    val pipelinePermissionAuthResult = authExPermissionApi.validateTaskBatchPermission(
                             user,
                             taskId,
                             projectId,
