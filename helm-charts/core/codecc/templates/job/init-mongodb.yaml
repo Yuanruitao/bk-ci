@@ -50,7 +50,7 @@ spec:
             - name: CODECC_HOST
               value: {{ include "codecc.mongodb.fullname" . }}
             - name: CODECC_PORT
-              value: {{ include "codecc.mongodb.port" . }}
+              value: {{ include "codecc.mongodb.port" . | quote }}
             - name: CODECC_AUTH_DB_DEFECT
               value: {{ include "codecc.mongodb.defectAuthDB" . }}
             - name: CODECC_AUTH_DB_TASK

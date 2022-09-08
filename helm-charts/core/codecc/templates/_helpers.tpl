@@ -100,7 +100,7 @@ Return the mongodb connection uri
 
 {{- define "codecc.task.mongodbUri" -}}
 {{- if eq .Values.mongodb.enabled true -}}
-{{- printf "mongodb://%s:%s@%s:27017/db_task" .Values.mongodb.auth.username .Values.mongodb.auth.password (include "codecc.mongodb.fullname" .) (include "codecc.mongodb.port" .) -}}
+{{- printf "mongodb://%s:%s@%s:%s/db_task" .Values.mongodb.auth.username .Values.mongodb.auth.password (include "codecc.mongodb.fullname" .) (include "codecc.mongodb.port" .) -}}
 {{- else -}}
 {{- printf "mongodb://%s:%s@%s:%s/db_task?%s" .Values.externalMongodb.username (.Values.externalMongodb.password | urlquery) (include "codecc.mongodb.fullname" .) (include "codecc.mongodb.port" .) .Values.externalMongodb.extraUrlParams -}}
 {{- end -}}
@@ -108,7 +108,7 @@ Return the mongodb connection uri
 
 {{- define "codecc.quartz.mongodbUri" -}}
 {{- if eq .Values.mongodb.enabled true -}}
-{{- printf "mongodb://%s:%s@%s:27017/db_quartz" .Values.mongodb.auth.username .Values.mongodb.auth.password (include "codecc.mongodb.fullname" .) -}}
+{{- printf "mongodb://%s:%s@%s:%s/db_quartz" .Values.mongodb.auth.username .Values.mongodb.auth.password (include "codecc.mongodb.fullname" .) (include "codecc.mongodb.port" .) -}}
 {{- else -}}
 {{- printf "mongodb://%s:%s@%s:%s/db_quartz?%s" .Values.externalMongodb.username (.Values.externalMongodb.password | urlquery) (include "codecc.mongodb.fullname" .) (include "codecc.mongodb.port" .) .Values.externalMongodb.extraUrlParams -}}
 {{- end -}}
