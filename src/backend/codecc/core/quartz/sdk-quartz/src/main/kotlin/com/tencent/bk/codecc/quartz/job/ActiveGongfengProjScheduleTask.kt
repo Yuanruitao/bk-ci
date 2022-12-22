@@ -62,7 +62,7 @@ class ActiveGongfengProjScheduleTask @Autowired constructor(
             .build()
         var projectJsonList = mutableListOf<ActiveProjParseModel>()
         OkhttpUtils.doHttp(personalRequest).use {
-            val data = it.body()!!.bytes().toString(Charset.forName("GBK"))
+            val data = it.body!!.bytes().toString(Charset.forName("GBK"))
             if (!it.isSuccessful) throw RuntimeException("fail to get git file content with: $url($data)")
             projectJsonList.addAll(
                 objectMapper.readValue(
@@ -84,7 +84,7 @@ class ActiveGongfengProjScheduleTask @Autowired constructor(
             .header("PRIVATE-TOKEN", gitPrivateToken)
             .build()
         OkhttpUtils.doHttp(teamRequest).use {
-            val data = it.body()!!.bytes().toString(Charset.forName("GBK"))
+            val data = it.body!!.bytes().toString(Charset.forName("GBK"))
             if (!it.isSuccessful) throw RuntimeException("fail to get git file content with: $url($data)")
             projectJsonList.addAll(
                 objectMapper.readValue(

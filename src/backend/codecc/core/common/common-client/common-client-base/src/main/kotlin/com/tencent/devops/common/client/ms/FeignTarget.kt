@@ -33,6 +33,7 @@ import com.tencent.devops.common.service.utils.MessageCodeUtil
 import feign.Request
 import feign.RequestTemplate
 import feign.Target
+import org.apache.commons.lang.StringUtils
 import org.slf4j.LoggerFactory
 import org.springframework.cloud.client.ServiceInstance
 import java.util.concurrent.ConcurrentHashMap
