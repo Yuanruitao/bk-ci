@@ -47,6 +47,16 @@ public interface SnapShotRepository extends MongoRepository<SnapShotEntity, Stri
      * @param buildId
      * @return
      */
-    SnapShotEntity findFirstByProjectIdAndBuildId(String projectId, String buildId);
+    SnapShotEntity findFirstByProjectIdAndTaskIdAndBuildId(String projectId, Long taskId, String buildId);
+
+    /**
+     * 根据项目id、构建id、任务id查询信息
+     *
+     * @param projectId
+     * @param buildId
+     * @param taskId
+     * @return
+     */
+    SnapShotEntity findFirstByProjectIdAndBuildIdAndTaskId(String projectId, String buildId, long taskId);
 
 }

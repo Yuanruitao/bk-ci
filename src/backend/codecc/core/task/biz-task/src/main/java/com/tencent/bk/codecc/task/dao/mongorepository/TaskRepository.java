@@ -114,6 +114,29 @@ public interface TaskRepository extends MongoRepository<TaskInfoEntity, String>
      */
     TaskInfoEntity findFirstByPipelineId(String pipelineId);
 
+
+    /**
+     * 通过流水线id获取任务信息集合
+     * @param pipelineId
+     * @return
+     */
+    List<TaskInfoEntity> findAllByPipelineId(String pipelineId);
+
+    /**
+     * 查询流水线下所有的任务
+     * @param pipelineId
+     * @return
+     */
+    Long countByPipelineId(String pipelineId);
+
+    /**
+     * 通过流水线id和多条流水线标识查找
+     * @param pipelineId
+     * @param multiPipelineMark
+     * @return
+     */
+    TaskInfoEntity findFirstByPipelineIdAndMultiPipelineMark(String pipelineId, String multiPipelineMark);
+
     /**
      * 通过流水线ID清单获取任务信息清单
      *

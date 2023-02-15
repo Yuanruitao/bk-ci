@@ -180,6 +180,24 @@ public interface ServiceTaskRestResource {
             String userName
     );
 
+    @ApiOperation("停用单个流水线任务")
+    @Path("/pipeline/stopSingle")
+    @DELETE
+    Result<Boolean> stopSingleTaskByPipeline(
+            @ApiParam(value = "流水线ID", required = true)
+            @QueryParam(value = "pipelineId")
+            String pipelineId,
+            @ApiParam(value = "多任务标识", required = false)
+            @QueryParam(value = "multiPipelineMark")
+            String multiPipelineMark,
+            @ApiParam(value = "停用原因", required = true)
+            @QueryParam("disabledReason")
+            String disabledReason,
+            @ApiParam(value = "当前用户", required = true)
+            @QueryParam("userName")
+            String userName
+    );
+
     @ApiOperation("检查任务是否存在")
     @Path("/exists/{taskId}")
     @GET
@@ -203,10 +221,25 @@ public interface ServiceTaskRestResource {
             @ApiParam(value = "流水线ID", required = true)
             @PathParam(value = "pipelineId")
                     String pipelineId,
+            @ApiParam(value = "单流水线对应多任务标识")
+            @QueryParam(value = "multiPipelineMark")
+                String multiPipelineMark,
             @ApiParam(value = "当前用户", required = true)
             @HeaderParam(AUTH_HEADER_DEVOPS_USER_ID)
                     String user
     );
+
+
+    @ApiOperation("通过流水线ID获取任务信息")
+    @Path("/id/pipeline/{pipelineId}")
+    @GET
+    Result<Long> getTaskIdByPipelineInfo(
+            @ApiParam(value = "流水线ID", required = true)
+            @PathParam(value = "pipelineId")
+            String pipelineId,
+            @ApiParam(value = "单流水线多分支标识", required = false)
+            @QueryParam(value = "multiPipelineMark")
+            String multiPipelineMark);
 
     @ApiOperation("通过流水线ID批量获取任务ID")
     @Path("/queryTaskListByPipelineIds")

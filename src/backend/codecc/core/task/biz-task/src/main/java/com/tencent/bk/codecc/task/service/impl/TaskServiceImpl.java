@@ -191,6 +191,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static com.tencent.devops.common.api.auth.HeaderKt.AUTH_HEADER_DEVOPS_PROJECT_ID;
@@ -1295,14 +1296,42 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @OperationHistory(funcId = FUNC_TASK_SWITCH, operType = DISABLE_ACTION)
     public Boolean stopTask(String pipelineId, String disabledReason, String userName) {
-        TaskInfoEntity taskEntity = taskRepository.findFirstByPipelineId(pipelineId);
-        if (Objects.isNull(taskEntity)) {
+        List<TaskInfoEntity> taskEntityList = taskRepository.findAllByPipelineId(pipelineId);
+        if (CollectionUtils.isNotEmpty(taskEntityList)) {
             log.error("taskInfo not exists! pipeline id is: {}", pipelineId);
             throw new CodeCCException(CommonMessageCode.RECORD_NOT_EXITS, new String[]{String.valueOf(pipelineId)},
                     null);
         }
-        return doStopTask(taskEntity, disabledReason, userName, false);
+        AtomicReference<Boolean> result = new AtomicReference<>(true);
+        taskEntityList.forEach(taskInfoEntity -> {
+            try {
+                doStopTask(taskInfoEntity, disabledReason, userName, false);
+            } catch (Exception e) {
+                log.info("stop task fail! task id: {}", taskInfoEntity.getTaskId());
+                result.set(false);
+            }
+        });
+        return result.get();
     }
+
+
+    @Override
+    @OperationHistory(funcId = FUNC_TASK_SWITCH, operType = DISABLE_ACTION)
+    public Boolean stopSinglePipelineTask(String pipelineId, String multiPipelineMark, String disabledReason,
+                                          String userName) {
+        String queryMark = multiPipelineMark;
+        if (StringUtils.isBlank(multiPipelineMark)) {
+            queryMark = null;
+        }
+        TaskInfoEntity taskInfoEntity = taskRepository.findFirstByPipelineIdAndMultiPipelineMark(pipelineId, queryMark);
+        if (Objects.isNull(taskInfoEntity)) {
+            log.error("taskInfo not exists! pipeline id is: {}", pipelineId);
+            throw new CodeCCException(CommonMessageCode.RECORD_NOT_EXITS, new String[]{String.valueOf(pipelineId)},
+                    null);
+        }
+        return doStopTask(taskInfoEntity, disabledReason, userName, false);
+    }
+
 
     /**
      * 管理员在OP停用任务
@@ -1730,8 +1759,13 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public PipelineTaskVO getTaskInfoByPipelineId(String pipelineId, String user) {
-        TaskInfoEntity taskInfoEntity = taskRepository.findFirstByPipelineId(pipelineId);
+    public PipelineTaskVO getTaskInfoByPipelineId(String pipelineId, String multiPipelineMark, String user) {
+        String finalMultiPipelineMark = multiPipelineMark;
+        if (StringUtils.isBlank(finalMultiPipelineMark)) {
+            finalMultiPipelineMark = null;
+        }
+        TaskInfoEntity taskInfoEntity = taskRepository.findFirstByPipelineIdAndMultiPipelineMark(pipelineId,
+                finalMultiPipelineMark);
         if (taskInfoEntity == null) {
             log.error("can not find task by pipeline id: {}", pipelineId);
             throw new CodeCCException(CommonMessageCode.PARAMETER_IS_INVALID, new String[]{"pipeline id"}, null);
@@ -1797,6 +1831,20 @@ public class TaskServiceImpl implements TaskService {
         taskDetailVO.setCodeLanguages(codeLanguages);
 
         return taskDetailVO;
+    }
+
+    @Override
+    public Long getTaskIdByPipelineInfo(String pipelineId, String multiPipelineMark) {
+        String finalMultiPipelineMark = multiPipelineMark;
+        if (StringUtils.isBlank(finalMultiPipelineMark)) {
+            finalMultiPipelineMark = null;
+        }
+        TaskInfoEntity taskInfoEntity = taskRepository.findFirstByPipelineIdAndMultiPipelineMark(pipelineId,
+                finalMultiPipelineMark);
+        if (null == taskInfoEntity) {
+            return null;
+        }
+        return taskInfoEntity.getTaskId();
     }
 
     @Override

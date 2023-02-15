@@ -26,6 +26,7 @@
 
 package com.tencent.bk.codecc.defect.vo.common;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -43,18 +44,22 @@ import java.util.List;
 public class SnapShotVO
 {
     @ApiModelProperty("项目id")
+    @JsonProperty("bs_project_id")
     private String projectId;
 
     @ApiModelProperty("流水线id")
+    @JsonProperty("bs_pipeline_id")
     private String pipelineId;
 
     @ApiModelProperty("任务id")
     private String taskId;
 
     @ApiModelProperty("构建id")
+    @JsonProperty("bs_build_id")
     private String buildId;
 
     @ApiModelProperty("工具快照清单")
+    @JsonProperty("tool_snapshot_list")
     private List<ToolSnapShotVO> toolSnapshotList;
 
 }

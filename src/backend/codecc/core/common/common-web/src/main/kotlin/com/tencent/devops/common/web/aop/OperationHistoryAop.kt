@@ -87,6 +87,8 @@ class OperationHistoryAop @Autowired constructor(
         val taskId = request.getHeader(AUTH_HEADER_DEVOPS_TASK_ID)?.toLong() ?: 0L
         // 获取流水线id
         val pipelineId = request.getParameter("pipelineId") ?: ""
+        // 获取单流水线对应多任务标识
+        val multiPipelineMark = request.getParameter("multiPipelineMark")
         //获取操作用户
         val userName = request.getHeader(AUTH_HEADER_DEVOPS_USER_ID) ?: request.getParameter("userName")
         //获取操作消息
@@ -97,6 +99,7 @@ class OperationHistoryAop @Autowired constructor(
         val operationHistoryDTO = OperationHistoryDTO(
                 taskId = taskId,
                 pipelineId = pipelineId,
+                multiPipelineMark = multiPipelineMark,
                 funcId = funcId,
                 operType = operType,
                 operTypeName = null,

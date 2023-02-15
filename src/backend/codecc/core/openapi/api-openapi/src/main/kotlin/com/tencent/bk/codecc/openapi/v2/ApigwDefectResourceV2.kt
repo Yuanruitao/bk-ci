@@ -95,6 +95,9 @@ interface ApigwDefectResourceV2 {
         @ApiParam(value = "流水线ID", required = true)
         @PathParam(value = "pipelineId")
         pipelineId: String,
+        @ApiParam(value = "单流水线对应多任务标识", required = false)
+        @QueryParam(value = "multiPipelineMark")
+        multiPipelineMark: String?,
         @ApiParam(value = "当前用户")
         @HeaderParam(AUTH_HEADER_DEVOPS_USER_ID)
         user: String? = null

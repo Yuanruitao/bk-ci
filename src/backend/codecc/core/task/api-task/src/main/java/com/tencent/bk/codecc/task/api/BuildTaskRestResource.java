@@ -81,6 +81,9 @@ public interface BuildTaskRestResource
         @ApiParam(value = "流水线id", required = true)
         @PathParam(value = "pipelineId")
             String pipelineId,
+        @ApiParam(value = "流水线附加标识", required = true)
+        @QueryParam(value = "multiPipelineMark")
+            String multiPipelineMark,
         @ApiParam(value = "用户id", required = true)
         @QueryParam(value = "userId")
             String userId

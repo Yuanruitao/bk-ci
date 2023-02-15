@@ -26,23 +26,32 @@
 
 package com.tencent.bk.codecc.defect.service.impl;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.tencent.bk.codecc.defect.dao.mongorepository.SnapShotRepository;
 import com.tencent.bk.codecc.defect.model.SnapShotEntity;
 import com.tencent.bk.codecc.defect.model.pipelinereport.ToolSnapShotEntity;
 import com.tencent.bk.codecc.defect.service.ICheckReportBizService;
 import com.tencent.bk.codecc.defect.service.SnapShotService;
+import com.tencent.bk.codecc.defect.vo.common.SnapShotVO;
+import com.tencent.bk.codecc.task.api.ServiceToolRestResource;
 import com.tencent.devops.common.api.exception.CodeCCException;
+import com.tencent.devops.common.client.Client;
 import com.tencent.devops.common.constant.ComConstants;
 import com.tencent.devops.common.constant.CommonMessageCode;
 import com.tencent.devops.common.redis.lock.RedisLock;
 import com.tencent.devops.common.service.BizServiceFactory;
+import com.tencent.devops.common.util.BeanUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 快照服务层代码
@@ -73,6 +82,27 @@ public class SnapShotServiceImpl implements SnapShotService
     @Autowired
     private RedisTemplate redisTemplate;
 
+
+    @Autowired
+    private Client client;
+
+    private static final String MOCK_KEY = "mock";
+
+    private LoadingCache<String, List<String>> toolOrderCache = CacheBuilder.newBuilder()
+            .refreshAfterWrite(15, TimeUnit.MINUTES)
+            .build(new CacheLoader<String, List<String>>() {
+                @Override
+                public List<String> load(String key) {
+                    try {
+                        return Arrays.asList(client.get(ServiceToolRestResource.class).findToolOrder().getData()
+                                .split(","));
+                    } catch (Exception e) {
+                        log.info("fail to get tool order", e);
+                        return new ArrayList<>();
+                    }
+                }
+            });
+
     @Override
     public SnapShotEntity saveToolBuildSnapShot(long taskId, String projectId, String pipelineId, String buildId,
                                                 String resultStatus, String resultMessage, String toolName)
@@ -93,7 +123,7 @@ public class SnapShotServiceImpl implements SnapShotService
         try
         {
             lock.lock();
-            snapShotEntity = snapShotRepository.findFirstByProjectIdAndBuildId(projectId, buildId);
+            snapShotEntity = snapShotRepository.findFirstByProjectIdAndTaskIdAndBuildId(projectId, taskId, buildId);
             if (null == snapShotEntity)
             {
                 snapShotEntity = new SnapShotEntity();
@@ -124,5 +154,23 @@ public class SnapShotServiceImpl implements SnapShotService
         }
 
         return snapShotEntity;
+    }
+
+    @Override
+    public SnapShotVO getTaskToolBuildSnapShot(String projectId, String buildId, long taskId) {
+        SnapShotEntity snapShot = snapShotRepository.findFirstByProjectIdAndBuildIdAndTaskId(
+                projectId, buildId, taskId);
+
+        List<String> toolOrder = toolOrderCache.getUnchecked(MOCK_KEY);
+        snapShot.getToolSnapshotList().sort((o1, o2) -> {
+            int index1 = toolOrder.indexOf(o1.getToolNameEn());
+            int index2 = toolOrder.indexOf(o2.getToolNameEn());
+            return index1 - index2;
+        });
+
+        SnapShotVO snapShotVO = new SnapShotVO();
+        BeanUtils.copyProperties(snapShot, snapShotVO);
+
+        return snapShotVO;
     }
 }
